@@ -7,7 +7,7 @@ TwlBgBank allows you to easily manage these patched dumps, so you don't have to 
 
 ## Setup
 * Make sure the latest version of [GodMode9](https://github.com/d0k3/GodMode9) is on your SD card.
-* Go [here](https://github.com/HTV04/TwlBgBank-GM9/releases/latest) and copy the TwlBgBank.gm9 file to the \gm9\scripts folder on your SD card.
+* Go [here](https://github.com/HTV04/TwlBgBank-GM9/releases/latest) and download the TwlBgBank.gm9 file to the \gm9\scripts folder on your SD card.
 
 # Instructions
 Using the script is really easy. Open the script by pressing HOME while after booting into GodMode9, choosing "Scripts...", then "TwlBgBank."
