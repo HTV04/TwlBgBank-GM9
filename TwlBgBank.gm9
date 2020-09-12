@@ -1,0 +1,121 @@
+set PREVIEW_MODE "TwlBgBank v1.0\nBy HTV04"
+
+# TwlBgBank
+# By HTV04
+
+set TBBDIR "0:/gm9/in/TwlBgBank"
+set SYSMODDIR "0:/luma/sysmodules"
+
+if not find $[TBBDIR] NULL
+	mkdir $[TBBDIR]
+end
+if not find $[SYSMODDIR] NULL
+	mkdir $[SYSMODDIR]
+end
+
+# Main menu.
+@menu
+labelsel -o -s "Choose an option, or press <B> to exit." menu_*
+goto end
+
+# Choose a TwlBg file from the bank, then set it as the current TwlBg.
+@menu_Choose_from_bank
+if find $[SYSMODDIR]/TwlBg.cxi NULL
+	shaget $[SYSMODDIR]/TwlBg.cxi TWLBGSHA
+	for $[TBBDIR] *.cxi
+		if sha $[FORPATH] $[TWLBGSHA]
+			goto choose_pass
+		end
+	next
+	echo "Current TwlBg not found in bank!\n \nIf you choose a TwlBg from the bank, the current\nTwlBg will be overwritten."
+end
+
+@choose_pass
+if not filesel "Choose a TwlBg, or press <B> to\nreturn to the main menu." $[TBBDIR]/*.cxi TWLBG
+	goto menu
+end
+
+strsplit TWLBGNAME $[TWLBG] "/"
+strsplit -b TWLBGNAME $[TWLBGNAME] "."
+
+if not ask "The following TwlBg will be set as the current TwlBg:\n \n* $[TWLBGNAME]\n \nContinue?"
+	echo "Returning to menu..."
+	goto menu
+end
+
+cp -w -n $[TWLBG] $[SYSMODDIR]/TwlBg.cxi
+
+echo "Successfully set the current TwlBg."
+goto menu
+
+# Add the current external TwlBg to the bank.
+@menu_Add_current_TwlBg_to_bank
+if not find $[SYSMODDIR]/TwlBg.cxi NULL
+	echo "Current TwlBg not found!\n \nReturning to menu..."
+	goto menu
+end
+
+set TWLBGNAME "TwlBg"
+if not input "Name the TwlBg to store (i.e. Widescreen, Pokemon,\nLinear sharpen 1, etc.), or press <B> to return to\nthe main menu." TWLBGNAME
+	goto menu
+end
+if find $[TBBDIR]/$[TWLBGNAME].cxi NULL
+	echo "This TwlBg already exists!\n \nPlease choose a different name."
+	goto menu_Add_current_TwlBg_to_bank
+end
+if not ask "The following TwlBg will be stored:\n \n* $[TWLBGNAME]\n \nContinue?"
+	echo "Returning to menu..."
+	goto menu
+end
+
+cp -n $[SYSMODDIR]/TwlBg.cxi $[TBBDIR]/$[TWLBGNAME].cxi
+
+echo "Successfully added current TwlBg to the bank."
+goto menu
+
+# Delete a TwlBg from the bank.
+@menu_Delete_from_bank
+if not filesel "Choose a TwlBg, or press <B> to\nreturn to the main menu." $[TBBDIR]/*.cxi TWLBG
+	goto menu
+end
+
+strsplit TWLBGNAME $[TWLBG] "/"
+strsplit -b TWLBGNAME $[TWLBGNAME] "."
+
+if not ask "The following TwlBg will be deleted:\n \n* $[TWLBGNAME]\n \nThis cannot be undone.\n \nContinue?"
+	echo "Returning to menu..."
+	goto menu
+end
+
+rm $[TWLBG]
+
+echo "Successfully deleted the selected TwlBg from the\nbank."
+goto menu
+
+# Delete the current TwlBg in order to force the 3DS to load the stock TwlBg.
+@menu_Delete_current_TwlBg
+if find $[SYSMODDIR]/TwlBg.cxi NULL
+	shaget $[SYSMODDIR]/TwlBg.cxi TWLBGSHA
+	for $[TBBDIR] *.cxi
+		if sha $[FORPATH] $[TWLBGSHA]
+			goto delete_current_pass
+		end
+	next
+	echo "Current TwlBg not found in bank!\n \nIf you delete the current TwlBg, you will not be able to recover it."
+else
+	echo "Current TwlBg not found!\n \nReturning to menu..."
+	goto menu
+end
+
+@delete_current_pass
+if not ask "Delete the current TwlBg?\n \nThis cannot be undone."
+	echo "Returning to menu..."
+	goto menu
+end
+
+rm $[SYSMODDIR]/TwlBg.cxi
+
+echo "Succesfully deleted current TwlBg."
+goto menu
+
+@end
